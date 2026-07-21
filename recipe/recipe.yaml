@@ -1,7 +1,7 @@
 schema_version: 1
 
 context:
-  version: "0.6.0"
+  version: "0.7.0"
   python_min: "3.11"
 
 package:
@@ -10,7 +10,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/w/whirlwind-insar/whirlwind_insar-${{ version }}.tar.gz
-  sha256: 934eb0adf7681e50fe51bc30d4c3496d27af8e0a4a92d263857fd5a100c5e3d2
+  sha256: ea133573245c9f7998d03a13daaa7e00f914944fb9b848766589ff4bbde67d9f
 
 build:
   number: 0
