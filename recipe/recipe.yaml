@@ -1,8 +1,7 @@
 schema_version: 1
 
 context:
-  version: "0.9.0"
-  python_min: "3.11"
+  version: "0.10.0"
 
 package:
   name: whirlwind-insar
@@ -10,7 +9,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/w/whirlwind-insar/whirlwind_insar-${{ version }}.tar.gz
-  sha256: 770c59a8833648c3ff56b40a94b86ac64f0c35e4c5b1e123081767c2beb12d77
+  sha256: 40c890a0235774b451abd82baf070947118314c754db9747bd842783f32b4e6b
 
 build:
   number: 0
@@ -46,12 +45,28 @@ requirements:
     - numpy >=1.21
 
 tests:
+  # version_independent builds once against python_min but installs on every
+  # later CPython, so exercise both ends of that range.
   - python:
       imports:
         - whirlwind
       pip_check: true
+      python_version:
+        - ${{ python_min }}.*
+        - "*"
   - script:
       - whirlwind --help
+  # Catch any non-abi3 CPython API in the extension module: it is built once
+  # and loaded on every later Python, where a violation would only show up at
+  # runtime.
+  - requirements:
+      run:
+        - abi3audit
+        - python ${{ python_min }}.*
+    script:
+      - if: unix
+        then: abi3audit $SP_DIR/whirlwind/_native.abi3.so -s -v --assume-minimum-abi3 ${{ python_min }}
+        else: abi3audit %SP_DIR%/whirlwind/_native.pyd -s -v --assume-minimum-abi3 ${{ python_min }}
 
 about:
   summary: Fast Rust-backed 2D phase unwrapper for InSAR
